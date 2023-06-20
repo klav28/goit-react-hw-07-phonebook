@@ -32,16 +32,6 @@ const phonebookSlice = createSlice({
     [addContact.pending]: handlePending,
     [addContact.fulfilled](state, action) {
       handleFulfilled(state);
-      if (
-        state.items.find(
-          el =>
-            el.contactName.toLowerCase() ===
-            action.payload.contactName.toLowerCase()
-        )
-      ) {
-        alert(`${action.payload.contactName} is already exists in contacts`);
-        return;
-      }
       state.items.push(action.payload);
     },
     [addContact.rejected]: handleRejected,
