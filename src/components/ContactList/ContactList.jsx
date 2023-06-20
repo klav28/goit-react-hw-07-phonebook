@@ -4,19 +4,16 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchContacts, deleteContact } from '../../store/operations';
 import {
-  getSortedContacts,
+  getFilteredContacts,
   getError,
   getIsLoading,
 } from '../../store/selectors';
 
-// import { deleteEntry } from '../../store/pbSlice';
-// import { getFilteredContacts } from 'store/selectors';
-
 export const ContactList = () => {
   const dispatch = useDispatch();
-  // const contacts = useSelector(getFilteredContacts);
+  const contacts = useSelector(getFilteredContacts);
 
-  const contacts = useSelector(getSortedContacts);
+  // const contacts = useSelector(getSortedContacts);
   const isLoading = useSelector(getIsLoading);
   const error = useSelector(getError);
 

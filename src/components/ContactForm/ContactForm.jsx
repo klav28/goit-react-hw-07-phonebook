@@ -2,8 +2,9 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import StyledForm from './ContactForm.component';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from '../../store/operations';
+import { getContacts } from '../../store/selectors';
 
 const phoneRegExp = '^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$';
 // /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -32,9 +33,19 @@ const initialValues = {
 export const ContactForm = () => {
   const dispatch = useDispatch();
 
+  const contacts = useSelector(getContacts);
+
   const handleSubmit = (values, { resetForm }) => {
     //    onContactAdd(values);
-    console.log('submitted: ', values.name);
+    console.log('submitted: ', values.contactName);
+    if (
+      contacts.find(
+        el => el.contactName.toLowerCase() === values.contactName.toLowerCase()
+      )
+    ) {
+      alert(`${values.contactName} is already exists in contacts`);
+      return;
+    }
     dispatch(addContact(values));
     resetForm();
   };
