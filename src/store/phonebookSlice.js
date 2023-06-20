@@ -1,5 +1,19 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
-import { fetchContacts } from './operations';
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchContacts, addContact, deleteContact } from './operations';
+
+const handlePending = state => {
+  state.isLoading = true;
+};
+
+const handleFulfilled = state => {
+  state.isLoading = false;
+  state.error = null;
+};
+
+const handleRejected = (state, action) => {
+  state.isLoading = false;
+  state.error = action.payload;
+};
 
 const phonebookSlice = createSlice({
   name: 'phonebook',
@@ -9,56 +23,38 @@ const phonebookSlice = createSlice({
     error: null,
   },
   extraReducers: {
-    [fetchContacts.pending](state, action) {
-      state.isLoading = true;
-    },
+    [fetchContacts.pending]: handlePending,
     [fetchContacts.fulfilled](state, action) {
-      state.isLoading = false;
-      state.error = null;
+      handleFulfilled(state);
       state.items = action.payload;
     },
-    [fetchContacts.rejected](state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
+    [fetchContacts.rejected]: handleRejected,
+    [addContact.pending]: handlePending,
+    [addContact.fulfilled](state, action) {
+      handleFulfilled(state);
+      if (
+        state.items.find(
+          el =>
+            el.contactName.toLowerCase() ===
+            action.payload.contactName.toLowerCase()
+        )
+      ) {
+        alert(`${action.payload.contactName} is already exists in contacts`);
+        return;
+      }
+      state.items.push(action.payload);
     },
+    [addContact.rejected]: handleRejected,
+    [deleteContact.pending]: handlePending,
+    [deleteContact.fulfilled](state, action) {
+      handleFulfilled(state);
+      const index = state.items.findIndex(
+        entry => entry.id === action.payload.id
+      );
+      state.items.splice(index, 1);
+    },
+    [deleteContact.rejected]: handleRejected,
   },
 });
 
 export const phonebookReducer = phonebookSlice.reducer;
-
-// const pbSlice = createSlice({
-//   name: 'phonebook',
-//   initialState,
-//   reducers: {
-//     addEntry: {
-//       reducer(state, action) {
-//         if (
-//           state.find(
-//             el => el.name.toLowerCase() === action.payload.name.toLowerCase()
-//           )
-//         ) {
-//           alert(`${action.payload.name} is already exists in contacts`);
-//           return;
-//         }
-//         state.push(action.payload);
-//       },
-//       prepare({ name, number }) {
-//         return {
-//           payload: {
-//             name,
-//             number,
-//             id: nanoid(4),
-//           },
-//         };
-//       },
-//     },
-//     deleteEntry(state, action) {
-//       const index = state.findIndex(entry => entry.id === action.payload);
-//       state.splice(index, 1);
-//     },
-//   },
-// });
-
-// export const { addEntry, deleteEntry } = pbSlice.actions;
-
-// export const pbReducer = pbSlice.reducer;

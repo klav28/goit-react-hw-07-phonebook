@@ -1,10 +1,9 @@
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import StyledForm from './ContactForm.component';
-// import PropTypes from 'prop-types';
 
 import { useDispatch } from 'react-redux';
-import { addEntry } from '../../store/pbSlice';
+import { addContact } from '../../store/operations';
 
 const phoneRegExp = '^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$';
 // /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -12,22 +11,22 @@ const phoneRegExp = '^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$';
 const nameRegExp = "^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$";
 
 const schema = yup.object().shape({
-  name: yup
+  contactName: yup
     .string()
     .matches(
       nameRegExp,
       'Name may contain only letters, apostrophe, dash and spaces.'
     )
     .required('Name is Required field'),
-  number: yup
+  contactPhone: yup
     .string()
     .matches(phoneRegExp, 'Phone number must be like +919367788755')
     .required('Number is Required field'),
 });
 
 const initialValues = {
-  name: '',
-  number: '',
+  contactName: '',
+  contactPhone: '',
 };
 
 export const ContactForm = () => {
@@ -36,7 +35,7 @@ export const ContactForm = () => {
   const handleSubmit = (values, { resetForm }) => {
     //    onContactAdd(values);
     console.log('submitted: ', values.name);
-    dispatch(addEntry(values));
+    dispatch(addContact(values));
     resetForm();
   };
 
@@ -50,13 +49,13 @@ export const ContactForm = () => {
         <StyledForm.Form>
           <StyledForm.Label>
             Contact Name:
-            <StyledForm.Error name="name" component="span" />
-            <StyledForm.Input type="text" name="name" />
+            <StyledForm.Error name="contactName" component="span" />
+            <StyledForm.Input type="text" name="contactName" />
           </StyledForm.Label>
           <StyledForm.Label>
             Phone Number:
-            <StyledForm.Error name="number" component="span" />
-            <StyledForm.Input type="tel" name="number" />
+            <StyledForm.Error name="contactPhone" component="span" />
+            <StyledForm.Input type="tel" name="contactPhone" />
           </StyledForm.Label>
           <StyledForm.Button type="submit">Add Contact</StyledForm.Button>
         </StyledForm.Form>
@@ -64,7 +63,3 @@ export const ContactForm = () => {
     </StyledForm>
   );
 };
-
-// ContactForm.propTypes = {
-//   onContactAdd: PropTypes.func.isRequired,
-// };

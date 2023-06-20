@@ -1,44 +1,62 @@
 import StyledList from './ContactList.component';
 
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteEntry } from '../../store/pbSlice';
-import { getFilteredContacts } from 'store/selectors';
+import { fetchContacts, deleteContact } from '../../store/operations';
+import { getContacts, getError, getIsLoading } from '../../store/selectors';
+
+// import { deleteEntry } from '../../store/pbSlice';
+// import { getFilteredContacts } from 'store/selectors';
 
 export const ContactList = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(getFilteredContacts);
+  // const contacts = useSelector(getFilteredContacts);
+
+  const contacts = useSelector(getContacts);
+  const isLoading = useSelector(getIsLoading);
+  const error = useSelector(getError);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <StyledList>
-      <h2>
-        Contacts
-        <span style={{ fontWeight: 400 }}> | {contacts.length} items</span>
-      </h2>
-      <StyledList.Table>
-        <thead>
-          <tr>
-            <StyledList.Th>Name</StyledList.Th>
-            <StyledList.Th>Phone Number</StyledList.Th>
-            <StyledList.Th>Delete</StyledList.Th>
-          </tr>
-        </thead>
-        <tbody>
-          {contacts.map(el => (
-            <StyledList.Tr key={el.id}>
-              <StyledList.Td>{el.name}</StyledList.Td>
-              <StyledList.Td>{el.number}</StyledList.Td>
-              <StyledList.Td>
-                <StyledList.Btn
-                  onClick={() => dispatch(deleteEntry(el.id))}
-                  id={el.id}
-                >
-                  X
-                </StyledList.Btn>
-              </StyledList.Td>
-            </StyledList.Tr>
-          ))}
-        </tbody>
-      </StyledList.Table>
+      {isLoading && <b>Loading Contacts...</b>}
+      {error && <b>{error}</b>}
+      {contacts.length > 0 && (
+        <>
+          <h2>
+            Contacts
+            <span style={{ fontWeight: 400 }}> | {contacts.length} items</span>
+          </h2>
+          <StyledList.Table>
+            <thead>
+              <tr>
+                <StyledList.Th>Name</StyledList.Th>
+                <StyledList.Th>Phone Number</StyledList.Th>
+                <StyledList.Th>Delete</StyledList.Th>
+              </tr>
+            </thead>
+            <tbody>
+              {contacts.map(el => (
+                <StyledList.Tr key={el.id}>
+                  <StyledList.Td>{el.contactName}</StyledList.Td>
+                  <StyledList.Td>{el.contactPhone}</StyledList.Td>
+                  <StyledList.Td>
+                    <StyledList.Btn
+                      onClick={() => dispatch(deleteContact(el.id))}
+                      id={el.id}
+                    >
+                      X
+                    </StyledList.Btn>
+                  </StyledList.Td>
+                </StyledList.Tr>
+              ))}
+            </tbody>
+          </StyledList.Table>
+        </>
+      )}
     </StyledList>
   );
 };
